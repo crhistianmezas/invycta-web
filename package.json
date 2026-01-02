@@ -4,13 +4,17 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "prisma generate && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@astrojs/node": "^9.1.1",
+    "@prisma/client": "^5.22.0",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5.16.6",
+    "prisma": "^5.22.0",
     "tailwindcss": "^4.1.18"
   }
 }
