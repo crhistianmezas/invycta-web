@@ -1,18 +1,24 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import type { WebContent } from '../types/cms';
+import { PrismaClient } from '@prisma/client';
 
-// 1. PEDIR DATOS
-const response = await fetch('https://invycta-core-production.up.railway.app/web-content');
-cache: 'no-store' // 👈 Esto obliga a traer datos nuevos cada vez
-const data: WebContent[] = await response.json();
+// 1. CONEXIÓN DIRECTA (Sin depender de un servidor externo)
+const prisma = new PrismaClient();
 
-// 2. CLASIFICAR DATOS
+const data = await prisma.webContent.findMany({
+  where: { isActive: true },
+  orderBy: { displayOrder: 'asc' }
+});
+
+// 2. CLASIFICAR DATOS (Igual que antes, pero con datos garantizados)
 const hero = data.find(item => item.sectionType === 'HERO');
 const sectors = data.filter(item => item.sectionType === 'SECTOR_CARD');
 const products = data.filter(item => item.sectionType === 'PRODUCT_ROW');
 const clients = data.filter(item => item.sectionType === 'CLIENT_LOGO');
 const testimonials = data.filter(item => item.sectionType === 'TESTIMONIAL');
+
+// Desconectar al terminar (Buena práctica en SSR)
+await prisma.$disconnect();
 ---
 
 <Layout title="Invycta Retail - Equipamiento Comercial">
