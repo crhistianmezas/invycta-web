@@ -1,14 +1,10 @@
-// @ts-check
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
-import node from '@astrojs/node'; // 👈 IMPORTANTE: El adaptador que instalamos
+import vercel from '@astrojs/vercel/serverless'; // 👈 CAMBIO CRÍTICO: Usa el adaptador de Vercel
 
-// https://astro.build/config
 export default defineConfig({
-  output: 'server', // 👈 VITAL: Activa el modo dinámico (SSR)
-  adapter: node({
-    mode: 'standalone',
-  }),
+  output: 'server', // 👈 VITAL para que Prisma funcione en tiempo real
+  adapter: vercel(), // 👈 Esto le dice a Vercel exactamente cómo servir la web
   vite: {
     plugins: [tailwindcss()]
   }
