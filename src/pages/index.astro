@@ -2,23 +2,27 @@
 import Layout from '../layouts/Layout.astro';
 import { PrismaClient } from '@prisma/client';
 
-// 1. CONEXIÓN DIRECTA (Sin depender de un servidor externo)
+// 1. CONEXIÓN DIRECTA A LA DB (Eficiencia Máxima)
 const prisma = new PrismaClient();
 
-const data = await prisma.webContent.findMany({
-  where: { isActive: true },
-  orderBy: { displayOrder: 'asc' }
-});
+let data = [];
+try {
+  data = await prisma.webContent.findMany({
+    where: { isActive: true },
+    orderBy: { displayOrder: 'asc' }
+  });
+} catch (error) {
+  console.error("Error cargando datos de Prisma:", error);
+} finally {
+  await prisma.$disconnect();
+}
 
-// 2. CLASIFICAR DATOS (Igual que antes, pero con datos garantizados)
+// 2. CLASIFICAR DATOS
 const hero = data.find(item => item.sectionType === 'HERO');
 const sectors = data.filter(item => item.sectionType === 'SECTOR_CARD');
 const products = data.filter(item => item.sectionType === 'PRODUCT_ROW');
 const clients = data.filter(item => item.sectionType === 'CLIENT_LOGO');
 const testimonials = data.filter(item => item.sectionType === 'TESTIMONIAL');
-
-// Desconectar al terminar (Buena práctica en SSR)
-await prisma.$disconnect();
 ---
 
 <Layout title="Invycta Retail - Equipamiento Comercial">
@@ -132,7 +136,7 @@ await prisma.$disconnect();
         </div>
     </div>
     <div class="border-t border-slate-800 pt-8 text-center text-gray-500 text-sm">
-        <p>&copy; 2026 Invycta Retail. Desarrollado con Aruni Studio Technology.</p>
+        <p>&copy; {new Date().getFullYear()} Invycta Retail. Desarrollado con Aruni Studio Technology.</p>
     </div>
   </footer>
 </Layout>
