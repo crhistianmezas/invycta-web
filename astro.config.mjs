@@ -1,11 +1,16 @@
 import { defineConfig } from 'astro/config';
+import vercel from '@astrojs/vercel/serverless'; // 👈 El adaptador vital
 import tailwindcss from '@tailwindcss/vite';
-import vercel from '@astrojs/vercel/serverless'; // 👈 CAMBIO CRÍTICO: Usa el adaptador de Vercel
 
 export default defineConfig({
-  output: 'hybrid', // 👈 VITAL para que Prisma funcione en tiempo real
-  adapter: vercel(), // 👈 Esto le dice a Vercel exactamente cómo servir la web
+  output: 'server', // 👈 OBLIGATORIO: Le dice a Astro "No hagas una web estática, haz una app real"
+  adapter: vercel({
+    webAnalytics: { enabled: true },
+  }),
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    ssr: {
+      noExternal: ['@prisma/client'] // Evita errores de Prisma en producción
+    }
   }
 });
