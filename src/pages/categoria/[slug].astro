@@ -1,0 +1,105 @@
+---
+// src/pages/categoria/[slug].astro
+export const prerender = true; // <--- ¡ESTA ES LA LLAVE MAESTRA!
+import Layout from '../../layouts/Layout.astro';
+
+// 1. OBTENER EL SLUG DE LA URL (ej: "gondolas-metalicas")
+const { slug } = Astro.params;
+const API_URL = import.meta.env.DATABASE_URL_PUBLIC_API_URL;
+
+let categoria = null;
+let productos = [];
+let error = false;
+
+// 2. PEDIR DATOS AL BACKEND (Server Side)
+try {
+  // Buscamos la categoría por su slug (Necesitas un endpoint en el backend para esto, 
+  // pero por ahora usaremos findOne o filtraremos. 
+  // *NOTA TÉCNICA:* Lo ideal es buscar por slug en el backend. 
+  // Como tu backend actual busca por ID, haremos un truco temporal: Pedir todas y filtrar.
+  
+  const res = await fetch(`${API_URL}/category`);
+  if (res.ok) {
+    const todas = await res.json();
+    categoria = todas.find(c => c.slug === slug);
+    
+    if (categoria) {
+      // Si encontramos la categoría, pedimos sus productos (asumiendo que vienen incluidos o pidiéndolos aparte)
+      // *MEJORA PRO:* En tu backend deberías tener endpoint /category/slug/:slug.
+      // Por hoy, simularemos que la categoría ya trae sus productos si el backend tuviera include: { products: true }
+      // Si no los trae, verás la lista vacía, pero la página cargará.
+      productos = categoria.products || []; 
+    } else {
+      error = true; // No existe esa categoría
+    }
+  } else {
+    error = true;
+  }
+} catch (e) {
+  console.error("Error fetching categoria:", e);
+  error = true;
+}
+
+// Si hay error o no existe, Astro puede redirigir al 404
+if (error) {
+  return Astro.redirect('/404');
+}
+---
+
+<Layout title={`${categoria.name} | Invycta Retail`} description={`Catálogo de ${categoria.name} para equipamiento comercial en Perú.`}>
+  
+  <section class="bg-gray-50 py-12 border-b border-gray-100">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl">
+        <span class="text-invycta-blue font-bold tracking-widest text-xs uppercase mb-2 block">Catálogo de Productos</span>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">{categoria.name}</h1>
+        <p class="text-gray-600 text-lg max-w-2xl">{categoria.description || `Encuentra los mejores ${categoria.name} para potenciar tu negocio con la calidad y garantía de Invycta Retail.`}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="container mx-auto px-4">
+      
+      {productos.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {productos.map((prod) => (
+            <a href={`/producto/${prod.slug}`} class="group block bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div class="aspect-square bg-gray-100 relative overflow-hidden">
+                {prod.image ? (
+                   <img src={prod.image} alt={prod.name} class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                ) : (
+                   <div class="w-full h-full flex items-center justify-center text-gray-300 bg-gray-50">
+                     <span class="text-xs">Sin imagen</span>
+                   </div>
+                )}
+                {/* Badge de Stock */}
+                <span class="absolute top-3 left-3 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">Disponible</span>
+              </div>
+              <div class="p-5">
+                <h3 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-invycta-blue transition">{prod.name}</h3>
+                <p class="text-gray-500 text-xs mb-3 line-clamp-2">{prod.description || 'Equipamiento de alta calidad.'}</p>
+                <div class="flex justify-between items-center">
+                   <span class="text-invycta-blue font-bold">Ver detalles</span>
+                   <span class="w-8 h-8 rounded-full bg-blue-50 text-invycta-blue flex items-center justify-center group-hover:bg-invycta-blue group-hover:text-white transition">
+                     →
+                   </span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      ) : (
+        /* ESTADO VACÍO (Empty State) */
+        <div class="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+          <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+          <h3 class="text-xl font-bold text-gray-900">Aún no hay productos aquí</h3>
+          <p class="text-gray-500 mt-2">Estamos actualizando nuestro catálogo de {categoria.name}.</p>
+          <a href="https://wa.me/51955271064" class="inline-block mt-6 text-invycta-blue font-bold hover:underline">Consultar por WhatsApp →</a>
+        </div>
+      )}
+
+    </div>
+  </section>
+
+</Layout>
