@@ -1,11 +1,25 @@
 ---
-// src/pages/categoria/[slug].astro
-export const prerender = true; // <--- ¡ESTA ES LA LLAVE MAESTRA!
-import Layout from '../../layouts/Layout.astro';
+// 1. ESTO ES LO QUE FALTA: La lista de instrucciones para Astro
+export async function getStaticPaths() {
+  const API_URL = import.meta.env.DATABASE_URL_PUBLIC_API_URL;
+  
+  // Llamamos a tu cerebro (Railway) para pedir las categorías
+  const response = await fetch(`${API_URL}/category`);
+  const categories = await response.json();
 
-// 1. OBTENER EL SLUG DE LA URL (ej: "gondolas-metalicas")
+  // Devolvemos la lista para que Astro genere una página por cada una
+  return categories.map((cat) => ({
+    params: { slug: cat.slug || cat.name.toLowerCase() }, // La URL (ej: /categoria/gondolas)
+    props: { categoryData: cat }, // Pasamos los datos para no tener que volver a pedirlos
+  }));
+}
+
+// 2. RECIBIMOS LOS DATOS (Ya no hace falta hacer fetch abajo si no quieres)
+const { categoryData } = Astro.props;
 const { slug } = Astro.params;
-const API_URL = import.meta.env.DATABASE_URL_PUBLIC_API_URL;
+
+// Si prefieres mantener tu lógica actual de fetch abajo, puedes hacerlo, 
+// pero getStaticPaths es OBLIGATORIO en modo estático.
 
 let categoria = null;
 let productos = [];
