@@ -1,0 +1,101 @@
+---
+// 1. MODO ESTÁTICO
+export const prerender = true;
+
+import Layout from '../../layouts/Layout.astro';
+
+// 2. GENERACIÓN DE RUTAS
+export async function getStaticPaths() {
+  const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+  
+  try {
+    const response = await fetch(`${API_URL}/product`);
+    if (!response.ok) return [];
+    const products = await response.json();
+
+    return products.map((prod) => ({
+      // TRUCO DE CTO: Aunque el archivo se llama [id], le pasamos el SLUG.
+      // Así tus enlaces /producto/gondola-central funcionarán perfectos.
+      params: { id: prod.slug || prod.id.toString() }, 
+      props: { product: prod },
+    }));
+  } catch (e) {
+    console.error("Error construyendo rutas de productos:", e);
+    return [];
+  }
+}
+
+// 3. RECIBIR DATOS
+const { product } = Astro.props;
+
+if (!product) {
+  return Astro.redirect('/404');
+}
+
+// Helper para formatear precio (si lo tienes)
+const formatPrice = (price) => {
+    if (!price) return 'Consultar';
+    return new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(price);
+};
+---
+
+<Layout title={`${product.name} | Invycta Retail`} description={product.description || `Detalles de ${product.name}`}>
+  
+  <section class="py-12 bg-white">
+    <div class="container mx-auto px-4">
+      
+      {/* BREADCRUMB SIMPLE */}
+      <nav class="text-sm text-gray-500 mb-8">
+        <a href="/" class="hover:text-invycta-blue">Inicio</a> 
+        <span class="mx-2">/</span>
+        <a href="/productos" class="hover:text-invycta-blue">Productos</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-900 font-bold">{product.name}</span>
+      </nav>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        
+        {/* IMAGEN DEL PRODUCTO */}
+        <div class="bg-gray-100 rounded-2xl overflow-hidden shadow-lg border border-gray-200">
+           {product.image ? (
+             <img src={product.image} alt={product.name} class="w-full h-full object-cover aspect-square" />
+           ) : (
+             <div class="w-full h-full flex items-center justify-center bg-gray-50 text-gray-400 aspect-square">
+               Sin Imagen
+             </div>
+           )}
+        </div>
+
+        {/* INFO DEL PRODUCTO */}
+        <div class="flex flex-col justify-center">
+          <span class="text-invycta-blue font-bold tracking-widest text-xs uppercase mb-2">Invycta Retail</span>
+          <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 mb-6">{product.name}</h1>
+          
+          <div class="mb-8">
+            <p class="text-gray-600 text-lg leading-relaxed">
+              {product.description || "Equipamiento de alta calidad diseñado para maximizar la exhibición y ventas en tu negocio."}
+            </p>
+          </div>
+
+          <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 mb-8">
+            <h3 class="font-bold text-gray-900 mb-3">Características:</h3>
+            <ul class="space-y-2 text-sm text-gray-600">
+               {/* Si tu backend tiene features, úsalas. Si no, texto genérico */}
+               <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Material resistente de alta durabilidad.</li>
+               <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Pintura electrostática al horno.</li>
+               <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Garantía de fábrica Invycta.</li>
+            </ul>
+          </div>
+
+          <div class="flex gap-4">
+            <a href={`https://wa.me/51955271064?text=Hola,%20me%20interesa%20el%20producto%20${product.name}`} target="_blank" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-center transition shadow-lg shadow-green-200 flex items-center justify-center gap-2">
+              <i class="fab fa-whatsapp text-xl"></i> Cotizar por WhatsApp
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</Layout>
