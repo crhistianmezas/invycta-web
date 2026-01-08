@@ -1,16 +1,8 @@
 import { defineConfig } from 'astro/config';
-import vercel from '@astrojs/vercel/serverless';
-import tailwindcss from '@tailwindcss/vite';
+import tailwind from '@astrojs/tailwind';
 
 export default defineConfig({
-  output: 'server',
-  adapter: vercel({
-    webAnalytics: { enabled: true },
-  }),
-  vite: {
-    plugins: [tailwindcss()],
-    ssr: {
-      external: ['@prisma/client'] 
-    }
-  }
+  output: 'static',
+  // ESTA LÍNEA ES LA CLAVE. Si falta, no hay estilos.
+  integrations: [tailwind()],
 });

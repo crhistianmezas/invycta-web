@@ -1,17 +1,61 @@
 ---
-import '../styles/global.css'; // <--- ESTO ES LO QUE PIDIÓ LA TERMINAL
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+	title: string;
+    description?: string;
+}
+
+const { title, description } = Astro.props;
+const metaDescription = description || "Equipamiento comercial y góndolas para minimarkets en Perú. Calidad y garantía Invycta Retail.";
 ---
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Invycta Retail</title>
-	</head>
-	<body class="bg-slate-50 text-slate-900">
-		<slot />
-	</body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title}</title>
+    <meta name="description" content={metaDescription} />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    </noscript>
+    
+    <style is:global>
+        body { font-family: 'Roboto', sans-serif; }
+        .backdrop-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 40;
+        }
+        body.menu-open .backdrop-overlay { opacity: 1; pointer-events: auto; }
+        body.menu-open { overflow: hidden; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+    <Header />
+    <div class="backdrop-overlay"></div>
+    <main class="flex-grow">
+        <slot />
+    </main>
+    <Footer />
+    <script is:inline>
+        // Lógica simple para el menú móvil
+        const overlay = document.querySelector('.backdrop-overlay');
+        const menuBtn = document.getElementById('menu-btn');
+        const body = document.body;
+        if (overlay) {
+            overlay.addEventListener('click', () => {
+                if(menuBtn && body.classList.contains('menu-open')) menuBtn.click(); 
+            });
+        }
+    </script>
+</body>
 </html>

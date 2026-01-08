@@ -1,0 +1,73 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-gray-900 text-white pt-16 pb-8 border-t-4 border-yellow-500 font-sans">
+    <div class="container mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+
+            <div class="col-span-1 md:col-span-1">
+                <div class="flex flex-col leading-none mb-6">
+                    <span class="font-extrabold text-2xl tracking-widest text-white">INVYCTA</span>
+                    <span class="text-[10px] tracking-[0.4em] text-yellow-500">RETAIL</span>
+                </div>
+                <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                    Expertos en equipamiento comercial, refrigeración y góndolas metálicas. Diseñamos espacios que venden más.
+                </p>
+                <div class="flex gap-4">
+                    <a href="https://facebook.com" target="_blank" class="w-10 h-10 rounded-full bg-blue-900/50 flex items-center justify-center hover:bg-invycta-blue hover:text-white transition duration-300"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://instagram.com" target="_blank" class="w-10 h-10 rounded-full bg-blue-900/50 flex items-center justify-center hover:bg-invycta-blue hover:text-white transition duration-300"><i class="fab fa-instagram"></i></a>
+                    <a href="https://tiktok.com" target="_blank" class="w-10 h-10 rounded-full bg-blue-900/50 flex items-center justify-center hover:bg-invycta-blue hover:text-white transition duration-300"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-bold mb-6 text-yellow-400 uppercase tracking-widest">Central de Ventas</h3>
+                <ul class="space-y-4 text-sm text-gray-300">
+                    <li class="flex items-start gap-3">
+                        <i class="fas fa-map-marker-alt mt-1 text-blue-400"></i>
+                        <span>Lima, Perú<br><span class="text-xs text-gray-500">Atención a nivel nacional</span></span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fab fa-whatsapp text-green-500 text-lg"></i>
+                        <a href="https://wa.me/51955271064" target="_blank" class="hover:text-white transition font-bold">+51 955 271 064</a>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-envelope text-blue-400"></i>
+                        <a href="mailto:ventas@invyctaretail.com" class="hover:text-yellow-400 transition">ventas@invyctaretail.com</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-bold mb-6 text-yellow-400 uppercase tracking-widest">Empresa</h3>
+                <ul class="space-y-3 text-sm text-gray-400">
+                    <li><a href="/nosotros" class="hover:text-white hover:translate-x-1 transition-transform inline-block">Nosotros</a></li>
+                    <li><a href="/proyectos" class="hover:text-white hover:translate-x-1 transition-transform inline-block">Proyectos Realizados</a></li>
+                    <li><a href="/catalogo" class="hover:text-white hover:translate-x-1 transition-transform inline-block">Catálogo 2026</a></li>
+                    <li><a href="/contacto" class="hover:text-white hover:translate-x-1 transition-transform inline-block">Solicitar Cotización</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-bold mb-6 text-yellow-400 uppercase tracking-widest">Horario de Atención</h3>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li class="flex justify-between border-b border-gray-800 pb-2"><span>Lunes - Viernes:</span> <span class="text-white">8:30 AM - 6:00 PM</span></li>
+                    <li class="flex justify-between border-b border-gray-800 pb-2 pt-2"><span>Sábado:</span> <span class="text-white">9:00 AM - 1:00 PM</span></li>
+                    <li class="mt-4 text-xs text-gray-500">
+                        <i class="fas fa-circle text-green-500 text-[8px] mr-1"></i>
+                        Atención digital 24/7 vía WhatsApp
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
+            <p>&copy; {currentYear} Invycta Retail S.A.C. Todos los derechos reservados.</p>
+            <div class="flex gap-6 mt-4 md:mt-0">
+                <a href="#" class="hover:text-gray-300 transition">Política de Privacidad</a>
+                <a href="#" class="hover:text-gray-300 transition">Términos y Condiciones</a>
+            </div>
+        </div>
+    </div>
+</footer>
