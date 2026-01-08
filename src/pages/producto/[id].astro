@@ -3,6 +3,7 @@
 export const prerender = true;
 
 import Layout from '../../layouts/Layout.astro';
+import type { Product } from '../../types/cms';
 
 // 2. GENERACIÓN DE RUTAS
 export async function getStaticPaths() {
@@ -11,9 +12,9 @@ export async function getStaticPaths() {
   try {
     const response = await fetch(`${API_URL}/product`);
     if (!response.ok) return [];
-    const products = await response.json();
+    const products: Product[] = await response.json();
 
-    return products.map((prod) => ({
+    return products.map((prod: Product) => ({
       // TRUCO DE CTO: Aunque el archivo se llama [id], le pasamos el SLUG.
       // Así tus enlaces /producto/gondola-central funcionarán perfectos.
       params: { id: prod.slug || prod.id.toString() }, 
@@ -26,14 +27,17 @@ export async function getStaticPaths() {
 }
 
 // 3. RECIBIR DATOS
-const { product } = Astro.props;
+export interface Props {
+  product: Product;
+}
+const { product }: Props = Astro.props;
 
 if (!product) {
   return Astro.redirect('/404');
 }
 
 // Helper para formatear precio (si lo tienes)
-const formatPrice = (price) => {
+const formatPrice = (price: number | undefined): string => {
     if (!price) return 'Consultar';
     return new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(price);
 };

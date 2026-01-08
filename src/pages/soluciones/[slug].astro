@@ -3,6 +3,7 @@
 export const prerender = true;
 
 import Layout from '../../layouts/Layout.astro';
+import type { Solution, Product } from '../../types/cms';
 
 // 2. GENERACIÓN DE RUTAS (GetStaticPaths)
 export async function getStaticPaths() {
@@ -12,9 +13,9 @@ export async function getStaticPaths() {
     // Nota: Aquí llamamos a /business-line (Soluciones)
     const response = await fetch(`${API_URL}/business-line`);
     if (!response.ok) return [];
-    const data = await response.json();
+    const data: Solution[] = await response.json();
 
-    return data.map((sol) => ({
+    return data.map((sol: Solution) => ({
       params: { slug: sol.slug },
       props: { solucionData: sol },
     }));
@@ -25,14 +26,17 @@ export async function getStaticPaths() {
 }
 
 // 3. RECUPERAR DATOS
-const { solucionData } = Astro.props;
+export interface Props {
+  solucionData: Solution;
+}
+const { solucionData }: Props = Astro.props;
 
 if (!solucionData) {
   return Astro.redirect('/404');
 }
 
 // Si la API trae productos relacionados a la solución, los usamos
-const productos = solucionData.products || [];
+const productos: Product[] = solucionData.products || [];
 ---
 
 <Layout title={`Soluciones para ${solucionData.name} | Invycta Retail`} description={`Equipamiento integral para ${solucionData.name}.`}>
@@ -90,7 +94,7 @@ const productos = solucionData.products || [];
         <div class="container mx-auto px-6">
             <h2 class="text-3xl font-bold text-center mb-12">Mobiliario Recomendado</h2>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                {productos.map((prod) => (
+                {productos.map((prod: Product) => (
                     <a href={`/producto/${prod.slug}`} class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition">
                         <div class="aspect-square bg-gray-100 rounded-lg mb-4 overflow-hidden">
                              {prod.image && <img src={prod.image} class="w-full h-full object-cover" />}

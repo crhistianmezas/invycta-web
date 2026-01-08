@@ -5,7 +5,7 @@ export const prerender = true;
 import Layout from '../layouts/Layout.astro';
 
 // 2. FUNCIÓN DE IMÁGENES (Integrada aquí para evitar errores de importación)
-const imgCloudinaryFetch = (url, width = 800) => {
+const imgCloudinaryFetch = (url: string, width: number = 800): string => {
   if (!url) return '';
   if (url.includes('images.unsplash.com')) {
     const separator = url.includes('?') ? '&' : '?';

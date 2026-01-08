@@ -3,6 +3,7 @@
 export const prerender = true;
 
 import Layout from '../../layouts/Layout.astro';
+import type { Category, Product } from '../../types/cms';
 
 // 2. GENERACIÓN DE RUTAS (GetStaticPaths)
 // Esto le dice a Astro qué páginas crear basándose en tu Railway
@@ -12,9 +13,9 @@ export async function getStaticPaths() {
   try {
     const response = await fetch(`${API_URL}/category`);
     if (!response.ok) return []; // Si falla, no rompemos el build
-    const categories = await response.json();
+    const categories: Category[] = await response.json();
 
-    return categories.map((cat) => ({
+    return categories.map((cat: Category) => ({
       params: { slug: cat.slug },
       props: { categoryData: cat }, // Pasamos los datos aquí para no volver a hacer fetch
     }));
@@ -25,14 +26,17 @@ export async function getStaticPaths() {
 }
 
 // 3. RECUPERAR DATOS
-const { categoryData } = Astro.props;
+export interface Props {
+  categoryData: Category;
+}
+const { categoryData }: Props = Astro.props;
 
 // Si por alguna razón entra aquí sin datos (raro en modo estático), redirigimos
 if (!categoryData) {
   return Astro.redirect('/404');
 }
 
-const productos = categoryData.products || [];
+const productos: Product[] = categoryData.products || [];
 ---
 
 <Layout title={`${categoryData.name} | Invycta Retail`} description={`Catálogo de ${categoryData.name} para equipamiento comercial.`}>
@@ -52,7 +56,7 @@ const productos = categoryData.products || [];
       
       {productos.length > 0 ? (
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {productos.map((prod) => (
+          {productos.map((prod: Product) => (
             <a href={`/producto/${prod.slug}`} class="group block bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <div class="aspect-square bg-gray-100 relative overflow-hidden">
                 {prod.image ? (
